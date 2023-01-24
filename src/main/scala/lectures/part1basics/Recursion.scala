@@ -37,22 +37,82 @@ object Recursion extends App {
     }
     factHelper(n, 1)
   }
-  println(anotherFactorial(5000)) // 0: overflows integer range. everything times 0 will becomes 0
+  println(anotherFactorial(5000)) // 0: overflows integer range. everything times 0 will becomes 0 -> use BigInt
 
   // when you need loops, use tail recursion
 
   /*
   Exercises:
-  1. Concatenate a string n times
-  2. isPrime function tail recursive
-  3. fibonacci function tail recursive
+  1. Concatenate a string n times, tail recursive
+  2. isPrime function, tail recursive
+  3. fibonacci function, tail recursive
   Any function can be turned into a tail recursive function. The trick is to use accumulator to
     store intermediate results rather than call the function recursively.
     You need as many accumulators as you have recursive calls on your code path.
    */
 
-//  def concatenateString(s: String, n: Int): String = {
-//
-//  }
+  /* My solution
+  def concatenateString(s: String, n: Int): String = {
+    @tailrec
+    def helper(s: String, n: Int, accumulator: String): String = {
+      if (n == 0) accumulator
+      else helper(s, n - 1, s + accumulator)
+    }
+    helper(s, n, "")
+  }
+   */
+
+  // Ans
+  @tailrec
+  def concatenateString(s: String, n: Int, accumulator: String): String =
+    if (n <= 0) accumulator
+    else concatenateString(s, n - 1, s + accumulator)
+
+  println(concatenateString("hello", 4, ""))
+
+  /* My ans:
+  def isPrime(n: Int): Boolean = {
+    @tailrec
+    def isPrimeUntil(x: Int): Boolean = {
+      if (x <= 1) true
+      else n % x != 0 && isPrimeUntil(x-1)
+    }
+    isPrimeUntil(n / 2)
+  }
+   */
+  def isPrime(n: Int): Boolean = {
+    @tailrec
+    def isPrimeTailRec(t: Int, isStillPrime: Boolean): Boolean = {
+      if (!isStillPrime) false
+      else if (t <= 1) true
+      else isPrimeTailRec(t - 1, n % t != 0 && isStillPrime)
+    }
+    isPrimeTailRec(n / 2, isStillPrime = true)
+  }
+  println(isPrime(2003))
+  println(isPrime(24))
+
+  /* My attempt: while thinking I thought of adding ground up
+  def fibonacci(n: Int): Int = {
+    @tailrec
+    def helper(x: Int, accu: Int, otherAccu: Int): Int = {
+      if (x <= 2) (accu + otherAccu)
+      else helper(x - 1, accu )
+    }
+    helper(n, 1, 0)
+  }
+   */
+  def fibonacci(n: Int): Int = {
+    @tailrec
+    def fiboTailRec(i: Int, last: Int, nextToLast: Int): Int = {
+      if (i == n) last // i reaches n
+      else fiboTailRec(i + 1, last + nextToLast, last)
+    }
+    if (n <= 2) 1
+    else fiboTailRec(2, 1, 1)
+  }
+  println(fibonacci(6)) // 8
+  // fibo(6) = fiboTailRec(2, 1, 1) = fiboTailRect(3, 2, 1) = fiboTailRect(4, 3, 2) = fiboTR(5, 5, 3) = fiboTR(6, 8, 5) = 8
+  println(fibonacci(23454))
 }
 
